@@ -1,0 +1,102 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  accounts      Account[]
+
+  forms     Form[]
+  responses Response[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+// Define the Form model
+model Form {
+  id        String     @id @default(uuid()) // Unique ID for the form
+  formTitle String // Title of the form
+  sections  Section[] // List of sections in the form
+  userId    String // Foreign key reference to the User who created the form
+  user      User       @relation(fields: [userId], references: [id]) // Relationship with User who created the form
+  responses Response[] // List of responses for the form
+}
+
+// Define the Section model
+model Section {
+  id          String     @id @default(uuid()) // Unique ID for the section
+  title       String // Title of the section
+  description String // Description of the section
+  order       Int // Order of the section
+  questions   Question[] // List of questions in the section
+  form        Form       @relation(fields: [formId], references: [id]) // Relationship with Form
+  formId      String // Foreign key reference to the Form
+}
+
+// Define the Question model
+model Question {
+  id        String     @id @default(uuid()) // Unique ID for the question
+  type      String // Type of the question (short, paragraph, check, radio, dropdown)
+  content   String? // Content of the question (for short or paragraph types)
+  required  Boolean // Required status of the question
+  order     Int // Order of the question
+  options   Option[] // List of options for the question
+  section   Section    @relation(fields: [sectionId], references: [id]) // Relationship with Section
+  sectionId String // Foreign key reference to the Section
+  responses Response[] // List of responses for the question
+}
+
+// Define the Option model
+model Option {
+  id         String     @id @default(uuid()) // Unique ID for the option
+  value      String // Value of the option
+  order      Int // Order of the option
+  question   Question   @relation(fields: [questionId], references: [id]) // Relationship with Question
+  questionId String // Foreign key reference to the Question
+  responses  Response[] // Establishing the many-to-many relationship
+}
+
+// Define the Response model
+model Response {
+  id         String   @id @default(uuid()) // Unique ID for the response
+  value      String // Value of the response (answer)
+  question   Question @relation(fields: [questionId], references: [id]) // Relationship with Question
+  questionId String // Foreign key reference to the Question
+  form       Form     @relation(fields: [formId], references: [id]) // Relationship with Form
+  formId     String // Foreign key reference to the Form
+  userId     String? // Foreign key reference to the User who submitted the response
+  user       User?    @relation(fields: [userId], references: [id]) // Relationship with User who submitted the response
+  options    Option[] // Establishing the many-to-many relationship
+}
