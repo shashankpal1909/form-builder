@@ -1,19 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import React, { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import { CiCircleAlert } from "react-icons/ci";
-import { MdSave } from "react-icons/md";
-import { z } from "zod";
 
 import LoadingComponent from "@/components/loading";
+import {
+    AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+    AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Form, FormControl, FormField, FormItem, FormLabel, FormMessage
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -23,17 +20,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { Form as FormSchema, Response, Section } from "@/lib/definitions";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Form as FormSchema, Section } from "@/lib/definitions";
+import { AlertDialog } from "@radix-ui/react-alert-dialog";
 
 type Props = { params: { slug: string } };
-
-const responseSchema = z.record(
-  z.object({
-    value: z.string(), // Assuming value is always a string
-    options: z.array(z.string()), // Assuming options is an array of strings
-  })
-);
 
 type FormResponse = {
   [questionId: string]: {
@@ -46,7 +36,7 @@ const ViewFormComponent = ({ params }: Props) => {
   const { slug } = params;
   const [formObject, setFormObject] = useState<FormSchema>({
     id: slug,
-    formTitle: "",
+    title: "",
     sections: [],
   });
   const [loading, setLoading] = useState<true | false>(true);
@@ -114,11 +104,8 @@ const ViewFormComponent = ({ params }: Props) => {
     console.log("currentSection", currentSection);
   }, [currentSection]);
 
-  const isPending = false;
-
   const clearFormResponse = () => {
     const response: FormResponse = {};
-    const error = {};
 
     for (const section of formObject.sections) {
       for (const question of section.questions) {
@@ -169,14 +156,45 @@ const ViewFormComponent = ({ params }: Props) => {
 
     return isResponseValid;
   };
+  const [isResponseSubmitting, setIsResponseSubmitting] = useState(false);
 
   if (loading) {
     return <LoadingComponent />;
   }
 
+  const handleResponseSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    if (validateRequiredQuestionsResponse()) {
+      setIsResponseSubmitting(true);
+
+      const response = await fetch(`/api/forms/${slug}/response`, {
+        method: "POST",
+        body: JSON.stringify({ formResponse }),
+      });
+
+      if (response.status === 200) {
+        setIsFormSubmitted(true);
+        clearFormResponse();
+        setSectionIndex(0);
+        setCurrentSection(formObject.sections[0]);
+      } else {
+        // show toast error
+        toast({
+          variant: "destructive",
+          title: "There was an error submitting your response!",
+          duration: 2000,
+        });
+      }
+
+      setIsResponseSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 container my-8">
-      <Label className="text-3xl">{formObject.formTitle}</Label>
+      <Label className="text-3xl">{formObject.title}</Label>
       {!isFormSubmitted ? (
         <form>
           {currentSection && (
@@ -201,7 +219,7 @@ const ViewFormComponent = ({ params }: Props) => {
                 </CardFooter>
               </Card>
               <div className="flex flex-col gap-2">
-                {currentSection.questions.map((question, questionIndex) => (
+                {currentSection.questions.map((question) => (
                   <Card
                     key={question.id}
                     className="h-min flex flex-col w-full"
@@ -457,19 +475,7 @@ const ViewFormComponent = ({ params }: Props) => {
                 </Button>
               )}
               {sectionIndex === formObject.sections.length - 1 ? (
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (validateRequiredQuestionsResponse()) {
-                      setIsFormSubmitted(true);
-                      clearFormResponse();
-                      setSectionIndex(0);
-                      setCurrentSection(formObject.sections[0]);
-                    }
-                  }}
-                >
-                  Submit
-                </Button>
+                <Button onClick={handleResponseSubmit}>Submit</Button>
               ) : (
                 <Button
                   onClick={(e) => {
@@ -490,15 +496,33 @@ const ViewFormComponent = ({ params }: Props) => {
             </div>
 
             <div>
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  clearFormResponse();
-                }}
-                variant={"ghost"}
-              >
-                Clear form
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant={"ghost"}>Clear form</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        clearFormResponse();
+                        setSectionIndex(0);
+                        setCurrentSection(formObject.sections[0]);
+                      }}
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </form>

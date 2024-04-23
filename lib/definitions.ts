@@ -28,7 +28,7 @@ export type Section = {
 
 export type Form = {
   id: string;
-  formTitle: string;
+  title: string;
   sections: Section[];
 };
 

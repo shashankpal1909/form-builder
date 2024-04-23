@@ -19,7 +19,7 @@ export async function saveForm(formObject: any) {
     // Step 1: Create Form
     const form = await db.form.create({
       data: {
-        formTitle: formObject.title,
+        title: formObject.title,
         sections: {
           // Step 2: Create Sections
           create: formObject.sections.map(

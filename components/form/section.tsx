@@ -84,7 +84,7 @@ const SectionComponent = ({
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size={"icon"} variant={"destructive"}>
+              <Button size={"icon"} variant={"outline"}>
                 <MdDeleteOutline className="h-[1.2rem] w-[1.2rem]" />
               </Button>
             </AlertDialogTrigger>

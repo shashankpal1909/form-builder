@@ -7,13 +7,15 @@ import { useFormState, useFormStatus } from "react-dom";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import { IoShareSocial } from "react-icons/io5";
-import { MdAdd, MdEdit } from "react-icons/md";
+import { MdAdd, MdContentCopy, MdEdit } from "react-icons/md";
 
 import LoadingComponent from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import {
     Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
 } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { createEmptyForm } from "@/lib/actions/create-form";
 
@@ -23,7 +25,7 @@ const initialState = {
 
 interface Form {
   id: string;
-  formTitle: string;
+  title: string;
   userId: string;
 }
 
@@ -104,17 +106,44 @@ const FormsPage = () => {
             <Card key={form.id}>
               <CardHeader>
                 <CardTitle className="flex justify-between items-center">
-                  {form.formTitle}{" "}
-                  <Button size={"icon"} variant={"outline"}>
-                    <IoShareSocial />
-                  </Button>
+                  {form.title}{" "}
+                  <Popover>
+                    <PopoverTrigger>
+                      <Button size={"icon"} variant={"outline"}>
+                        <IoShareSocial />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-min" asChild>
+                      <Button
+                      variant={"outline"}
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            `${process.env.NEXT_PUBLIC_APP_URL}/forms/${form.id}`
+                          );
+                          toast({
+                            title: "Link copied to clipboard",
+                          });
+                        }}
+                        
+                      >
+                        <MdContentCopy />
+                        &nbsp;Copy Link
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
                 </CardTitle>
                 <CardDescription>{form.id}</CardDescription>
               </CardHeader>
-              <CardContent>form desc</CardContent>
-              <CardFooter className="flex gap-2 flex-col md:flex-row items-center justify-between">
+              <Separator />
+              <CardFooter className="flex gap-2 py-4 flex-col md:flex-row items-center justify-between">
                 <div className="flex">
-                  <Button variant="outline">
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(`/forms/${form.id}/response`);
+                    }}
+                  >
                     <GrView />
                     &nbsp;View Responses
                   </Button>
@@ -127,7 +156,10 @@ const FormsPage = () => {
                     <MdEdit />
                     &nbsp;Edit
                   </Button>
-                  <Button onClick={() => router.push(`/forms/${form.id}/`)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/forms/${form.id}/`)}
+                  >
                     <FaExternalLinkAlt />
                     &nbsp;Open
                   </Button>

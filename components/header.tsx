@@ -41,9 +41,15 @@ const Header = () => {
             // <TooltipProvider>
             // <Tooltip>
             // <TooltipTrigger>
-            <Button variant="outline" size="default" onClick={signOutHandler}>
-              <IoMdLogOut size={16} />&nbsp;Sign Out
-            </Button>
+            <>
+              <Button variant={"outline"} onClick={() => router.push("/forms")}>
+                My Forms
+              </Button>
+              <Button variant="outline" size="default" onClick={signOutHandler}>
+                <IoMdLogOut size={16} />
+                &nbsp;Sign Out
+              </Button>
+            </>
           ) : (
             // </TooltipTrigger>
             // <TooltipContent>Sign Out</TooltipContent>

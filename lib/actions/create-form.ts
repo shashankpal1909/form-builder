@@ -32,7 +32,7 @@ export const createEmptyForm = async (prevState: any, formData: FormData) => {
     await db.form.create({
       data: {
         id: formId,
-        formTitle: "Untitled Form",
+        title: "Untitled Form",
         userId: user.id,
         sections: {
           create: [

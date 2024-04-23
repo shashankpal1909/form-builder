@@ -100,7 +100,7 @@ async function saveForm(formData: any, email: string) {
   const form = await db.form.upsert({
     where: { id: formData.id },
     update: {
-      formTitle: formData.title,
+      title: formData.title,
       sections: {
         upsert: formData.sections.map((section: Section) => ({
           where: { id: section.id },
@@ -175,7 +175,7 @@ async function saveForm(formData: any, email: string) {
     },
     create: {
       id: formData.id,
-      formTitle: formData.title,
+      title: formData.title,
       userId: user.id,
       sections: {
         create: formData.sections.map((section: Section) => ({

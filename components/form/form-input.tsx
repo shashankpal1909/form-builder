@@ -48,7 +48,7 @@ const FormInputComponent = ({ formId }: Props) => {
 
       console.log("fetched form:", data);
 
-      setTitle(data.form.formTitle);
+      setTitle(data.form.title);
       setSections(data.form.sections);
 
       setLoading(false);
@@ -361,7 +361,7 @@ const FormInputComponent = ({ formId }: Props) => {
       <div className="flex gap-2 flex-col w-full">
         <Button
           size={"default"}
-          variant={"default"}
+          variant={"outline"}
           onClick={() => addSection()}
         >
           <MdAdd className="h-[1.2rem] w-[1.2rem]" />

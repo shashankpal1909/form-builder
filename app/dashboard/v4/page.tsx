@@ -38,7 +38,7 @@ type Option = {
 };
 
 const FormSchema = z.object({
-  formTitle: z.string().min(2, {
+  title: z.string().min(2, {
     message: "title must be at least 2 characters.",
   }),
   formDescription: z.string().optional(),
@@ -48,7 +48,7 @@ export default function InputForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      formTitle: "",
+      title: "",
       formDescription: "",
     },
   });
