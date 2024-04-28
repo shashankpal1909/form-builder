@@ -44,32 +44,50 @@ export async function POST(req: Request) {
 
   const body = await req.json();
 
-  console.log("body", body);
-
-  const form = await saveForm(body.formObject, session.user.email);
-  console.log(form);
-
-  return new Response(JSON.stringify({ message: "success", form }));
-}
-
-async function saveForm(formData: any, email: string) {
-  console.log("formObject", formData);
-  console.log("email", email);
-
   const user = await db.user.findUnique({
-    where: { email },
+    where: { email: session.user.email },
   });
 
-  if (!user || !user.id) return;
+  if (!user || !user.id) {
+    return new Response(
+      JSON.stringify({
+        error: "not authenticated",
+      }),
+      {
+        status: 401,
+      }
+    );
+  }
+
+  console.log("body", body);
+
   const existingForm = await db.form.findUnique({
-    where: { id: formData.id },
+    where: { id: body.formObject.id },
     include: {
       sections: { include: { questions: { include: { options: true } } } },
     },
   });
 
-  //  todo : check if user is owner of the form
+  if (existingForm) {
+    if (existingForm.userId !== user.id) {
+      return new Response(
+        JSON.stringify({
+          error: "not authorized",
+        }),
+        {
+          status: 401,
+        }
+      );
+    }
+  }
 
+  const form = await saveForm(body.formObject, user.id);
+  console.log(form);
+
+  return new Response(JSON.stringify({ message: "success", form }));
+}
+
+async function saveForm(formData: any, userId: string) {
   formData = {
     id: formData.id,
     title: formData.title,
@@ -94,6 +112,47 @@ async function saveForm(formData: any, email: string) {
       ),
     })),
   };
+
+  const existingForm = await db.form.findUnique({
+    where: { id: formData.id },
+    include: {
+      sections: { include: { questions: { include: { options: true } } } },
+    },
+  });
+
+  if (existingForm) {
+    // Extract the IDs of questions that are present in the incoming form
+    const incomingQuestionIds = formData.sections.flatMap((section: Section) =>
+      section.questions.map((question: Question) => question.id)
+    );
+    const incomingOptionIds = formData.sections.flatMap((section: Section) =>
+      section.questions.flatMap((question: Question) =>
+        question.options
+          ? question.options.map((option: Option) => option.id)
+          : []
+      )
+    );
+
+    // Iterate over each section, question, and option of the existing form
+    for (const section of existingForm.sections) {
+      for (const question of section.questions) {
+        // If the question ID is not present in the incoming form, delete the question
+        if (!incomingQuestionIds.includes(question.id)) {
+          await db.option.deleteMany({ where: { questionId: question.id } });
+          await db.answer.deleteMany({ where: { questionId: question.id } });
+          await db.question.delete({ where: { id: question.id } });
+        } else {
+          // If the question exists, check for options to delete
+          for (const option of question.options) {
+            // If the option ID is not present in the incoming form, delete the option
+            if (!incomingOptionIds.includes(option.id)) {
+              await db.option.delete({ where: { id: option.id } });
+            }
+          }
+        }
+      }
+    }
+  }
 
   console.log("form-data", JSON.stringify(formData));
 
@@ -176,7 +235,7 @@ async function saveForm(formData: any, email: string) {
     create: {
       id: formData.id,
       title: formData.title,
-      userId: user.id,
+      userId,
       sections: {
         create: formData.sections.map((section: Section) => ({
           id: section.id,

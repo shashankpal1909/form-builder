@@ -180,3 +180,9 @@ export const getFormWithAllResponses = async (formId: string) => {
     },
   });
 };
+
+export const deleteResponseById = (responseId: string) => {
+  return db.response.delete({
+    where: { id: responseId },
+  });
+};

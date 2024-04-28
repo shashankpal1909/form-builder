@@ -41,7 +41,13 @@ const FormResponseByUserPage = async ({ params }: Props) => {
         <Separator />
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src={response.user?.image} />
+            <AvatarImage
+              src={
+                response.user && response.user.image
+                  ? response.user.image
+                  : undefined
+              }
+            />
             <AvatarFallback>
               {response.user?.name?.charAt(0).toUpperCase()}
             </AvatarFallback>

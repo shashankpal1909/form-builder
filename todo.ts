@@ -22,7 +22,7 @@
 
 // TODO: add handling for not found and errors
 
-// TODO: implement credentials signin/ signup actions
+// TODO: implement credentials signin / signup actions
 
 // TODO: view responses page - individual and question wise
 
@@ -45,3 +45,13 @@
 // TODO: improve navbar
 
 // TODO: add graphics for question wise responses
+
+// TODO: handle auth errors and display meaningful errors on the client side
+
+// TODO: after question is removed from form remove it from db also
+
+// TODO: [DONE ✅] BUG: if i only delete questions from form and save its not getting deleted
+
+// TODO: use order to sort everything
+
+// TODO: improve ui user feedback
