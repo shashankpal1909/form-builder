@@ -4,9 +4,10 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 import { getUserByEmail } from "@/data/user";
+import { db } from "@/lib/db";
+import { sendVerificationEmail } from "@/lib/mail";
+import { generateVerificationToken } from "@/lib/tokens";
 import { SignUpSchema } from "@/schemas";
-
-import { db } from "../db";
 
 export const signUpServerAction = async (
   values: z.infer<typeof SignUpSchema>
@@ -34,5 +35,11 @@ export const signUpServerAction = async (
     },
   });
 
-  return { status: "success", message: "Sign up success!" };
+  const verificationToken = await generateVerificationToken(email);
+  await sendVerificationEmail(
+    verificationToken.email,
+    verificationToken.token,
+  );
+
+  return { status: "success", message: "Verification email has been sent" };
 };

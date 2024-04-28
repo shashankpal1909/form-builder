@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { SessionProvider } from "next-auth/react";
-import { Inter, Montserrat } from "next/font/google";
+import { Inter, Montserrat, Poppins } from "next/font/google";
 
 import { auth } from "@/auth";
 import Footer from "@/components/footer";
@@ -14,6 +14,10 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 const montserrat = Montserrat({
   subsets: ["cyrillic", "cyrillic-ext", "latin", "latin-ext", "vietnamese"],
+});
+const poppins = Poppins({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin", "latin-ext", "devanagari"],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +33,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={cn(inter.className, "flex flex-col h-dvh")}>
+      <body className={cn(poppins.className, "flex flex-col h-dvh")}>
         <SessionProvider session={session}>
           <ThemeProvider
             attribute="class"

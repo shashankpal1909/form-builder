@@ -55,3 +55,9 @@
 // TODO: use order to sort everything
 
 // TODO: improve ui user feedback
+
+// TODO: add form settings to give user the ability to configure and control form
+
+// TODO: add a settings page for user profile
+
+// TODO: replace api calls with server actions

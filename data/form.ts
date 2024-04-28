@@ -7,10 +7,20 @@ export const getFormById = (id: string) => {
     where: { id },
     include: {
       sections: {
+        orderBy: {
+          order: "asc",
+        },
         include: {
           questions: {
+            orderBy: {
+              order: "asc",
+            },
             include: {
-              options: true,
+              options: {
+                orderBy: {
+                  order: "asc",
+                },
+              },
               responses: true,
             },
           },

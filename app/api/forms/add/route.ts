@@ -121,7 +121,10 @@ async function saveForm(formData: any, userId: string) {
   });
 
   if (existingForm) {
-    // Extract the IDs of questions that are present in the incoming form
+    // Extract the IDs of sections, questions, and options that are present in the incoming form
+    const incomingSectionIds = formData.sections.map(
+      (section: Section) => section.id
+    );
     const incomingQuestionIds = formData.sections.flatMap((section: Section) =>
       section.questions.map((question: Question) => question.id)
     );
@@ -135,18 +138,24 @@ async function saveForm(formData: any, userId: string) {
 
     // Iterate over each section, question, and option of the existing form
     for (const section of existingForm.sections) {
-      for (const question of section.questions) {
-        // If the question ID is not present in the incoming form, delete the question
-        if (!incomingQuestionIds.includes(question.id)) {
-          await db.option.deleteMany({ where: { questionId: question.id } });
-          await db.answer.deleteMany({ where: { questionId: question.id } });
-          await db.question.delete({ where: { id: question.id } });
-        } else {
-          // If the question exists, check for options to delete
-          for (const option of question.options) {
-            // If the option ID is not present in the incoming form, delete the option
-            if (!incomingOptionIds.includes(option.id)) {
-              await db.option.delete({ where: { id: option.id } });
+      // If the section ID is not present in the incoming form, delete the section and its content
+      if (!incomingSectionIds.includes(section.id)) {
+        await db.question.deleteMany({ where: { sectionId: section.id } });
+        await db.section.delete({ where: { id: section.id } });
+      } else {
+        for (const question of section.questions) {
+          // If the question ID is not present in the incoming form, delete the question
+          if (!incomingQuestionIds.includes(question.id)) {
+            await db.option.deleteMany({ where: { questionId: question.id } });
+            await db.answer.deleteMany({ where: { questionId: question.id } });
+            await db.question.delete({ where: { id: question.id } });
+          } else {
+            // If the question exists, check for options to delete
+            for (const option of question.options) {
+              // If the option ID is not present in the incoming form, delete the option
+              if (!incomingOptionIds.includes(option.id)) {
+                await db.option.delete({ where: { id: option.id } });
+              }
             }
           }
         }

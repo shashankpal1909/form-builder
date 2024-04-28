@@ -44,7 +44,24 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
-// Define the Form model
+model VerificationToken {
+  id      String   @id @default(uuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model PasswordResetToken {
+  id      String   @id @default(uuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
 model Form {
   id     String @id @default(uuid())
   userId String
@@ -60,7 +77,6 @@ model Form {
   user User @relation(fields: [userId], references: [id])
 }
 
-// Define the Section model
 model Section {
   id     String @id @default(uuid())
   formId String
@@ -76,7 +92,6 @@ model Section {
   form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
 }
 
-// Define the Question model
 model Question {
   id        String @id @default(uuid())
   sectionId String
@@ -95,7 +110,6 @@ model Question {
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 }
 
-// Define the Option model
 model Option {
   id         String @id @default(uuid())
   questionId String
@@ -125,7 +139,6 @@ model Response {
   user User? @relation(fields: [userId], references: [id])
 }
 
-// Define the Response model
 model Answer {
   id         String @id @default(uuid())
   questionId String

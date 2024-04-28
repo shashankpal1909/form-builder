@@ -1,12 +1,14 @@
 "use client";
-
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import { MdError, MdVerified } from "react-icons/md";
 import { z } from "zod";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import InfoComponent from "@/components/info";
 import { Button } from "@/components/ui/button";
 import {
     Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
@@ -15,13 +17,15 @@ import {
     Form, FormControl, FormField, FormItem, FormLabel, FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { signUpServerAction } from "@/lib/actions/sign-up";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { SignUpSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExclamationTriangleIcon, RocketIcon } from "@radix-ui/react-icons";
 
 function SignUpPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -44,7 +48,7 @@ function SignUpPage() {
       signUpServerAction(values).then((data) => {
         switch (data.status) {
           case "success":
-            router.push("/");
+            setSuccess(data.message);
             break;
           case "error":
             setError(data.message);
@@ -53,6 +57,18 @@ function SignUpPage() {
             break;
         }
       });
+    });
+  };
+
+  const signInWithGoogle = () => {
+    signIn("google", {
+      callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+    });
+  };
+
+  const signInWithGithub = () => {
+    signIn("github", {
+      callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     });
   };
 
@@ -67,7 +83,10 @@ function SignUpPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className="grid w-full gap-4"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -124,16 +143,44 @@ function SignUpPage() {
                 />
               </div>
               {error && (
-                <Alert variant={"destructive"}>
-                  <ExclamationTriangleIcon className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+                <InfoComponent
+                  variant={"error"}
+                  title={"Error"}
+                  description={error}
+                  Icon={MdError}
+                />
               )}
-              {/* <FormError message={error} />
-          <FormSuccess message={success} /> */}
+              {success && (
+                <InfoComponent
+                  variant={"success"}
+                  title={"Success"}
+                  description={success}
+                  Icon={MdVerified}
+                />
+              )}
               <Button disabled={isPending} type="submit" className="w-full">
                 Continue
+              </Button>
+              <Separator />
+              <Button
+                variant={"outline"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  signInWithGoogle();
+                }}
+              >
+                <FaGoogle />
+                &nbsp; Continue With Google
+              </Button>
+              <Button
+                variant={"outline"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  signInWithGithub();
+                }}
+              >
+                <FaGithub />
+                &nbsp; Continue With Github
               </Button>
             </form>
           </Form>
