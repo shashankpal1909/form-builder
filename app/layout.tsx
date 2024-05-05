@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { SessionProvider } from "next-auth/react";
-import { Inter, Montserrat, Poppins } from "next/font/google";
+import { ABeeZee, Inter, Lato, Montserrat, Open_Sans, Poppins } from "next/font/google";
 
 import { auth } from "@/auth";
 import Footer from "@/components/footer";
@@ -11,13 +11,45 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: [
+    "latin",
+    "latin-ext",
+    "cyrillic",
+    "cyrillic-ext",
+    "greek",
+    "greek-ext",
+  ],
+});
 const montserrat = Montserrat({
   subsets: ["cyrillic", "cyrillic-ext", "latin", "latin-ext", "vietnamese"],
 });
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin", "latin-ext", "devanagari"],
+});
+const abeezee = ABeeZee({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400"],
+});
+const lato = Lato({
+  subsets: ["latin", "latin-ext"],
+  weight: ["100", "300", "400", "700", "900"],
+});
+const openSans = Open_Sans({
+  subsets: [
+    "latin",
+    "latin-ext",
+    "cyrillic",
+    "cyrillic-ext",
+    "greek",
+    "greek-ext",
+    "hebrew",
+    "math",
+    "symbols",
+    "vietnamese",
+  ],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -33,7 +65,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={cn(poppins.className, "flex flex-col h-dvh")}>
+      <body className={cn(inter.className, "flex flex-col h-dvh")}>
         <SessionProvider session={session}>
           <ThemeProvider
             attribute="class"
@@ -44,7 +76,6 @@ export default async function RootLayout({
             <Header />
             {children}
             <Toaster />
-            {/* <Footer /> */}
           </ThemeProvider>
         </SessionProvider>
       </body>

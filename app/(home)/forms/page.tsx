@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import {
     Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
@@ -76,14 +77,17 @@ const FormsPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2 container mt-8">
+    <div className="flex flex-grow flex-col gap-2 container mt-8">
       <div className="flex items-center">
         <form
           action={formAction}
           className="flex w-full gap-2 flex-col justify-between items-center"
         >
-          <div className="flex w-full justify-between items-center">
-            <h1 className="text-2xl">Your Forms</h1>
+          <div className="flex w-full space-y-0.5 justify-between items-center">
+            <div className="flex flex-col gap-2 justify-center items-center">
+              <h2 className="text-2xl font-bold tracking-tight">Your Forms</h2>
+              <Label className="text-muted-foreground">Manage your forms</Label>
+            </div>
             <Button aria-disabled={pending} type="submit">
               {pending ? (
                 "Creating..."
@@ -95,6 +99,7 @@ const FormsPage = () => {
               )}
             </Button>
           </div>
+          <Separator className="my-6" />
 
           <div>{state?.error ? `An error occurred: ${state.error}` : null}</div>
         </form>
@@ -115,7 +120,7 @@ const FormsPage = () => {
                     </PopoverTrigger>
                     <PopoverContent className="w-min" asChild>
                       <Button
-                      variant={"outline"}
+                        variant={"outline"}
                         onClick={() => {
                           navigator.clipboard.writeText(
                             `${process.env.NEXT_PUBLIC_APP_URL}/forms/${form.id}`
@@ -124,7 +129,6 @@ const FormsPage = () => {
                             title: "Link copied to clipboard",
                           });
                         }}
-                        
                       >
                         <MdContentCopy />
                         &nbsp;Copy Link
