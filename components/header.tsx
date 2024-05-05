@@ -1,30 +1,39 @@
 "use client";
-
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { IoMdLogIn, IoMdLogOut } from "react-icons/io";
+import { CgOptions } from "react-icons/cg";
+import { CiCreditCard1, CiSettings } from "react-icons/ci";
+import { FaUser, FaUsers } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
+import { IoMdLogIn } from "react-icons/io";
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,
+    DropdownMenuSeparator, DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { signOutServerAction } from "@/lib/actions/sign-out";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 import { ModeToggle } from "./mode-toggle";
-import { Button } from "./ui/button";
 
 const Header = () => {
   const session = useSession();
   const router = useRouter();
   const user = session.data?.user;
 
-  const signOutHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const signOutHandler = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
+  ) => {
     signOutServerAction();
     // router.push("/sign-in");
   };
 
-  const signInHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const signInHandler = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
+  ) => {
     router.push("/sign-in");
   };
 
@@ -37,37 +46,59 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex gap-2 items-center">
+          <ModeToggle />
           {user ? (
-            // <TooltipProvider>
-            // <Tooltip>
-            // <TooltipTrigger>
             <>
-              <Button variant={"outline"} onClick={() => router.push("/forms")}>
-                My Forms
-              </Button>
-              <Button variant="outline" size="default" onClick={signOutHandler}>
-                <IoMdLogOut size={16} />
-                &nbsp;Sign Out
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size={"icon"}>
+                    <CgOptions />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuLabel>Forms</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => router.push("/forms")}>
+                      <FaUsers className="mr-2 h-4 w-4" />
+                      <span>My Forms</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <PlusIcon className="mr-2 h-4 w-4" />
+                      <span>New Form</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => router.push("/profile")}>
+                      <FaUser className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/billing")}>
+                      <CiCreditCard1 className="mr-2 h-4 w-4" />
+                      <span>Billing</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <CiSettings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOutHandler}>
+                    <FiLogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
-            // </TooltipTrigger>
-            // <TooltipContent>Sign Out</TooltipContent>
-            // </Tooltip>
-            // </TooltipProvider>
-            // <TooltipProvider>
-            // <Tooltip>
-            // <TooltipTrigger>
             <Button variant="outline" size="default" onClick={signInHandler}>
               <IoMdLogIn size={16} />
               &nbsp;Sign In
             </Button>
-            // </TooltipTrigger>
-            // <TooltipContent>Sign In</TooltipContent>
-            // </Tooltip>
-            // </TooltipProvider>
           )}
-          <ModeToggle />
         </div>
       </nav>
     </header>

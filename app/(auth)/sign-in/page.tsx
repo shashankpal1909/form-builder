@@ -95,6 +95,40 @@ function SignInPage() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="grid w-full gap-4"
             >
+              <div className="flex gap-4">
+                <Button
+                  className="w-full"
+                  variant={"outline"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    signInWithGoogle();
+                  }}
+                >
+                  <FaGoogle />
+                  &nbsp;Google
+                </Button>
+                <Button
+                  className="w-full"
+                  variant={"outline"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    signInWithGithub();
+                  }}
+                >
+                  <FaGithub />
+                  &nbsp;Github
+                </Button>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -151,27 +185,6 @@ function SignInPage() {
               )}
               <Button disabled={isPending} type="submit" className="w-full">
                 Continue
-              </Button>
-              <Separator />
-              <Button
-                variant={"outline"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  signInWithGoogle();
-                }}
-              >
-                <FaGoogle />
-                &nbsp; Continue With Google
-              </Button>
-              <Button
-                variant={"outline"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  signInWithGithub();
-                }}
-              >
-                <FaGithub />
-                &nbsp; Continue With Github
               </Button>
             </form>
           </Form>

@@ -19,3 +19,19 @@ export const getUserById = async (id: string) => {
     return null;
   }
 };
+
+export const updateStripeCustomerId = async (
+  userId: string,
+  customerId: string
+) => {
+  try {
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        stripeCustomerId: customerId,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
