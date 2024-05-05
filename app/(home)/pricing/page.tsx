@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
 
 import styles from "./pricing.module.css";
 
-export interface PricingTierFrequency {
+interface PricingTierFrequency {
   id: string;
   value: string;
   label: string;
   priceSuffix: string;
 }
 
-export interface PricingTier {
+interface PricingTier {
   name: string;
   id: string;
   href: string | Record<string, string>;
@@ -29,12 +29,12 @@ export interface PricingTier {
   soldOut?: boolean;
 }
 
-export const frequencies: PricingTierFrequency[] = [
+const frequencies: PricingTierFrequency[] = [
   { id: "1", value: "1", label: "Monthly", priceSuffix: "/month" },
   { id: "2", value: "2", label: "Annually", priceSuffix: "/year" },
 ];
 
-export const tiers: PricingTier[] = [
+const tiers: PricingTier[] = [
   {
     name: "Basic Plan - Free",
     id: "0",
