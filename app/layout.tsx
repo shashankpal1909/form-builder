@@ -56,6 +56,7 @@ export const metadata: Metadata = {
   title: "Form Builder Pro",
   description: "build your custom forms in minutes",
 };
+
 export default async function RootLayout({
   children,
 }: Readonly<{
