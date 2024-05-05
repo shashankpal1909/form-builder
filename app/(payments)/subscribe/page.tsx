@@ -61,10 +61,10 @@ export default function SubscribeComponent() {
     const getSubscription = async () => {
       setLoading(true);
       const response = await fetch(`/api/subscription`);
-      const subscription = await response.json();
+      const { subscription } = await response.json();
       console.log(subscription);
 
-      if (subscription) {
+      if (subscription && subscription.status === "active") {
         setAlreadySubscribed(true);
       }
       setLoading(false);
