@@ -1,13 +1,10 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState, useTransition } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import LoadingComponent from "@/components/loading";
 import { Button } from "@/components/ui/button";
-import { getSubscriptionByEmail } from "@/data/subscription";
-import { Label } from "@radix-ui/react-dropdown-menu";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
@@ -54,8 +51,6 @@ export default function SubscribeComponent() {
     const data = await res.json();
     return data.clientSecret;
   }, [frequency, plan]);
-
-  const session = useSession();
 
   useEffect(() => {
     const getSubscription = async () => {

@@ -34,6 +34,7 @@ export const signInServerAction = async (
     );
 
     await sendVerificationEmail(
+      existingUser.name || "User",
       verificationToken.email,
       verificationToken.token
     );

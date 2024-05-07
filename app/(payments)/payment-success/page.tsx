@@ -1,9 +1,15 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+
 export default function Return() {
+  const router = useRouter();
+
   const [status, setStatus] = useState(null);
   const [customerEmail, setCustomerEmail] = useState("");
 
@@ -17,6 +23,8 @@ export default function Return() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
+
         setStatus(data.status);
         setCustomerEmail(data.customer_email);
       });
@@ -28,13 +36,24 @@ export default function Return() {
 
   if (status === "complete") {
     return (
-      <section id="success">
-        <p>
+      <div className="flex flex-col gap-4 flex-grow justify-center items-center">
+        <h1 className="text-2xl font-bold">Purchase Successful</h1>
+        <Label className="text-center">
           We appreciate your business! A confirmation email will be sent to{" "}
-          {customerEmail}. If you have any questions, please email{" "}
-          <a href="mailto:orders@example.com">orders@example.com</a>.
-        </p>
-      </section>
+          {customerEmail}. If you have any questions, please email us at&nbsp;
+          <Link href="mailto:formbuilderpro@gmail.com">
+            formbuilderpro@gmail.com
+          </Link>
+          .
+        </Label>
+        <Button
+          className="rounded-full"
+          size={"lg"}
+          onClick={() => router.push("/billing")}
+        >
+          Manage Subscription
+        </Button>
+      </div>
     );
   }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { db } from "@/lib/db";
+import { sendSubscriptionPurchaseConfirmationEmail } from "@/lib/mail";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
@@ -90,6 +91,14 @@ export async function POST(req: NextRequest) {
               endDate: new Date(subscription.current_period_end * 1000),
             },
           });
+
+          if (subscription.status === "active") {
+            sendSubscriptionPurchaseConfirmationEmail(
+              user.name || "User",
+              user.email,
+              sub
+            );
+          }
 
           console.log("Subscription Updated", sub);
         }

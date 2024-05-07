@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -37,8 +37,9 @@ export const signUpServerAction = async (
 
   const verificationToken = await generateVerificationToken(email);
   await sendVerificationEmail(
+    name,
     verificationToken.email,
-    verificationToken.token,
+    verificationToken.token
   );
 
   return { status: "success", message: "Verification email has been sent" };
