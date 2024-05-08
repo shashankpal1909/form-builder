@@ -15,7 +15,7 @@ export const authRoutes: string[] = [
   "/sign-up",
   "/forgot-password",
   "/verify",
-  "/api/form",
+  "/reset-password",
 ];
 
 /**

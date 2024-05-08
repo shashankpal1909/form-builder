@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { MdError, MdVerified } from "react-icons/md";
@@ -15,28 +16,31 @@ import {
     Form, FormControl, FormField, FormItem, FormLabel, FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { reset } from "@/lib/actions/reset";
-import { ResetSchema } from "@/schemas";
+import { newPassword } from "@/lib/actions/reset-password";
+import { NewPasswordSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const ForgotPasswordComponent = () => {
+const ResetPasswordComponent = () => {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof ResetSchema>>({
-    resolver: zodResolver(ResetSchema),
+  const form = useForm<z.infer<typeof NewPasswordSchema>>({
+    resolver: zodResolver(NewPasswordSchema),
     defaultValues: {
-      email: "",
+      password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof ResetSchema>) => {
+  const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
     setError("");
     setSuccess("");
 
     startTransition(() => {
-      reset(values).then((data) => {
+      newPassword(values, token).then((data) => {
         setError(data?.error);
         setSuccess(data?.success);
       });
@@ -47,10 +51,9 @@ const ForgotPasswordComponent = () => {
     <div className="flex justify-center items-center h-screen">
       <Card className="w-full max-w-[600px] mx-4">
         <CardHeader>
-          <CardTitle className="text-3xl">Forgot Password</CardTitle>
+          <CardTitle className="text-3xl">Reset Password</CardTitle>
           <CardDescription>
-            Enter your email and we&apos;ll send you instructions to reset your
-            password.
+            Welcome back! Let&apos;s reset your password
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -59,16 +62,16 @@ const ForgotPasswordComponent = () => {
               <div className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           disabled={isPending}
-                          placeholder="john.doe@example.com"
-                          type="email"
+                          placeholder="******"
+                          type="password"
                         />
                       </FormControl>
                       <FormMessage />
@@ -110,4 +113,4 @@ const ForgotPasswordComponent = () => {
   );
 };
 
-export default ForgotPasswordComponent;
+export default ResetPasswordComponent;

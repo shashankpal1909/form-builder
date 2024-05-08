@@ -15,6 +15,7 @@ const BillingComponent = async (props: Props) => {
     return <div>Not authenticated</div>;
   }
   const subscription = await getSubscriptionByEmail(session.user.email);
+  console.log(session.user.email, subscription);
 
   return (
     <div className="flex flex-grow flex-col gap-2 container mt-8">
