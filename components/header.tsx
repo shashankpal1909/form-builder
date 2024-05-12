@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { CgOptions } from "react-icons/cg";
 import { CiCreditCard1, CiSettings } from "react-icons/ci";
-import { FaUser, FaUsers } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { IoMdLogIn } from "react-icons/io";
+import { SiGoogledocs } from "react-icons/si";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +16,6 @@ import {
     DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { signOutServerAction } from "@/lib/actions/sign-out";
-import { PlusIcon } from "@radix-ui/react-icons";
 
 import { ModeToggle } from "./mode-toggle";
 
@@ -60,12 +60,8 @@ const Header = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem onClick={() => router.push("/forms")}>
-                      <FaUsers className="mr-2 h-4 w-4" />
+                      <SiGoogledocs className="mr-2 h-4 w-4" />
                       <span>My Forms</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <PlusIcon className="mr-2 h-4 w-4" />
-                      <span>New Form</span>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />

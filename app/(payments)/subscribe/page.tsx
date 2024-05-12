@@ -5,6 +5,10 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import LoadingComponent from "@/components/loading";
 import { Button } from "@/components/ui/button";
+
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
@@ -90,10 +94,23 @@ export default function SubscribeComponent() {
   const options = { fetchClientSecret };
 
   return (
-    <div id="checkout">
-      <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-        <EmbeddedCheckout />
-      </EmbeddedCheckoutProvider>
+    <div className="flex flex-grow flex-col gap-2 container py-8">
+      <div className="flex flex-col w-full space-y-0.5">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">
+            {plan === "starter" ? "Starter" : "Professional"} Plan
+          </h2>
+          <Label className="text-muted-foreground">
+            Subscribe for Premium Access: Elevate Your Experience Today!
+          </Label>
+        </div>
+      </div>
+      <Separator className="my-6" />
+      <div id="checkout">
+        <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
+          <EmbeddedCheckout />
+        </EmbeddedCheckoutProvider>
+      </div>
     </div>
   );
 }

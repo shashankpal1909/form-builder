@@ -1,5 +1,6 @@
 "use client";
-
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { CiCircleAlert } from "react-icons/ci";
 
@@ -9,10 +10,14 @@ import {
     AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import {
+    Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
@@ -21,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { Form as FormSchema, Section } from "@/lib/definitions";
+import { cn } from "@/lib/utils";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
 
 type Props = { params: { slug: string } };
@@ -125,7 +131,11 @@ const ViewFormComponent = ({ params }: Props) => {
     if (currentSection) {
       for (const question of currentSection?.questions) {
         if (question.required) {
-          if (question.type === "short" || question.type === "paragraph") {
+          if (
+            question.type === "short" ||
+            question.type === "paragraph" ||
+            question.type === "date"
+          ) {
             if (formResponse[question.id]?.value === "") {
               setErrors((prev) => ({
                 ...prev,
@@ -193,8 +203,13 @@ const ViewFormComponent = ({ params }: Props) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 container my-8">
-      <Label className="text-3xl">{formObject.title}</Label>
+    <div className="flex flex-grow flex-col gap-2 container my-8">
+      <div className="flex flex-col w-full space-y-0.5">
+        <h2 className="text-2xl font-bold tracking-tight">
+          {formObject.title}
+        </h2>
+      </div>
+      <Separator className="my-6" />
       {!isFormSubmitted ? (
         <form>
           {currentSection && (
@@ -204,16 +219,15 @@ const ViewFormComponent = ({ params }: Props) => {
                   <CardTitle className="flex gap-2 text-2xl justify-start items-center">
                     {currentSection.title}
                   </CardTitle>
+                  {currentSection.description && (
+                    <>
+                      <CardDescription>
+                        {currentSection.description}
+                      </CardDescription>
+                    </>
+                  )}
                 </CardHeader>
                 <Separator />
-                {currentSection.description && (
-                  <>
-                    <CardContent className="flex flex-col justify-end py-4 gap-4">
-                      {currentSection.description}
-                    </CardContent>
-                    <Separator />
-                  </>
-                )}
                 <CardFooter className="flex text-sm justify-start py-4 gap-4 text-red-600 dark:text-red-500">
                   * indicates required questions
                 </CardFooter>
@@ -290,6 +304,57 @@ const ViewFormComponent = ({ params }: Props) => {
                           }}
                           required={question.required}
                         />
+                      )}
+
+                      {question.type === "date" && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-[280px] justify-start text-left font-normal",
+                                !formResponse[question.id].value &&
+                                  "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {formResponse[question.id].value ? (
+                                format(formResponse[question.id].value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              mode="single"
+                              selected={
+                                new Date(formResponse[question.id].value)
+                              }
+                              onSelect={(date) => {
+                                setErrors(
+                                  // remove error messages
+                                  (prev) => {
+                                    return {
+                                      ...prev,
+                                      [question.id]: "",
+                                    };
+                                  }
+                                );
+                                setFormResponse((prev) => {
+                                  return {
+                                    ...prev,
+                                    [question.id]: {
+                                      value: date ? date.toISOString() : "",
+                                      options: [],
+                                    },
+                                  };
+                                });
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                       )}
 
                       {question.type === "radio" && (

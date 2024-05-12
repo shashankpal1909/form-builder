@@ -61,3 +61,11 @@
 // TODO: add a settings page for user profile
 
 // TODO: replace api calls with server actions
+
+// TODO: fix pricing page styling
+
+// TODO: allow users to make copy of forms
+
+// TODO: allow users to make templates
+
+// TODO: new types - number date
