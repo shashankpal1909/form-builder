@@ -5,8 +5,10 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import LoadingComponent from "@/components/loading";
 import { Button } from "@/components/ui/button";
+
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
