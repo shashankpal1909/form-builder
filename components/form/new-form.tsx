@@ -89,6 +89,7 @@ const NewFormDialog = ({ children }: PropsWithChildren<Props>) => {
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   value="blank"
+                  // @ts-ignore
                   onClick={(e) => setNewFormType(e.target.value)}
                   id="r1"
                 />
@@ -97,6 +98,7 @@ const NewFormDialog = ({ children }: PropsWithChildren<Props>) => {
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   value="from_template"
+                  // @ts-ignore
                   onClick={(e) => setNewFormType(e.target.value)}
                   id="r2"
                 />
@@ -120,6 +122,7 @@ const NewFormDialog = ({ children }: PropsWithChildren<Props>) => {
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   value="ai_generated"
+                  // @ts-ignore
                   onClick={(e) => setNewFormType(e.target.value)}
                   id="r3"
                 />
