@@ -13,7 +13,7 @@ const prices = {
   },
   professional: {
     monthly: "price_1PCfYNSHQ0lbv5wZvYAv6FOL",
-    yearly: "price_1PCfa7SHQ0lbv5wZpLuJoav7",
+    yearly: "price_1PFgVhSHQ0lbv5wZoO5ZVp55",
   },
 };
 
@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
     const checkoutSession = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
       customer: user?.stripeCustomerId || undefined,
-
       line_items: [
         {
           price: prices[plan][frequency],

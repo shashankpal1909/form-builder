@@ -1,20 +1,24 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { v4 as uuid } from "uuid";
-
 import { auth } from "@/auth";
 import { getUserByEmail } from "@/data/user";
+import { generateForm } from "@/lib/utils/ai_generation";
 
 import { db } from "../db";
 
-export const createEmptyForm = async (prevState: any, formData: FormData) => {
+export const createNewForm = async (
+  title: string,
+  type: string,
+  template?: string,
+  prompt?: string
+) => {
   console.log("create empty form");
   const session = await auth();
 
   if (!session || !session.user || !session.user.email) {
     return {
-      error: "not authenticated",
+      status: "error",
+      message: "not authenticated",
     };
   }
 
@@ -22,48 +26,88 @@ export const createEmptyForm = async (prevState: any, formData: FormData) => {
 
   if (!user || !user.id) {
     return {
-      error: "not authenticated",
+      status: "error",
+      message: "not authenticated",
     };
   }
 
-  const formId = uuid();
+  let form = {
+    title,
+    userId: user.id,
+    sections: [
+      {
+        title: "Untitled Section",
+        description: "",
+        questions: [
+          {
+            content: "Untitled Question",
+            type: "short",
+            required: false,
+            options: [],
+          },
+        ],
+      },
+    ],
+  };
+
+  switch (type) {
+    case "blank":
+      break;
+    case "from_template":
+      break;
+    case "ai_generated":
+      if (prompt) {
+        const generatedForm = await generateForm(prompt);
+        if (generatedForm) {
+          form.title = generatedForm.title;
+          form.sections = generatedForm.sections;
+        }
+      }
+      break;
+  }
 
   try {
-    await db.form.create({
+    const newForm = await db.form.create({
       data: {
-        id: formId,
-        title: "Untitled Form",
-        userId: user.id,
+        title: form.title,
+        userId: form.userId,
         sections: {
-          create: [
-            {
-              id: uuid(),
-              order: 1,
-              title: "Section 1",
-              description: "",
-              questions: {
-                create: [
-                  {
-                    id: uuid(),
-                    order: 1,
-                    content: "Question 1",
-                    type: "short",
-                    required: false,
-                  },
-                ],
-              },
+          create: form.sections.map((section, index) => ({
+            title: section.title,
+            description: section.description,
+            order: index + 1,
+            questions: {
+              create: section.questions.map((question, index) => ({
+                content: question.content,
+                type: question.type,
+                required: question.required,
+                order: index + 1,
+                options: {
+                  create: question.options
+                    ? question.options.map(
+                        (option: { value: string }, index) => ({
+                          value: option.value,
+                          order: index + 1,
+                        })
+                      )
+                    : [],
+                },
+              })),
             },
-          ],
+          })),
         },
       },
     });
-  } catch (error) {
-    console.log(error);
-
     return {
-      error: "Something went wrong",
+      status: "success",
+      message: "form created",
+      data: newForm,
     };
-  } finally {
-    redirect(`/forms/${formId}/edit`);
+  } catch (error: any) {
+    console.log("error", error);
+    return {
+      status: "error",
+      message: error.message,
+    };
   }
 };

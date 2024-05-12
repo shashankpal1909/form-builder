@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { getFormWithAllResponses, getFormWithResponseById, getResponseById } from "@/data/form";
+import { getFormWithAllResponses } from "@/data/form";
 import { getUserByEmail } from "@/data/user";
 
 type Props = { params: { slug: string } };
@@ -40,7 +40,11 @@ const QuestionWiseResponsePage = async ({ params }: Props) => {
 
   for (const section of form.sections) {
     for (const question of section.questions) {
-      if (question.type === "short" || question.type === "paragraph") {
+      if (
+        question.type === "short" ||
+        question.type === "paragraph" ||
+        question.type === "date"
+      ) {
         const set = new Set<string>();
         for (const response of question.responses) {
           set.add(response.value);
@@ -77,12 +81,12 @@ const QuestionWiseResponsePage = async ({ params }: Props) => {
   }
 
   return (
-    <div className="container flex flex-col gap-2 py-8">
-      <div className="flex flex-col gap-4">
-        <Label className="text-3xl">{form.title}</Label>
-        <Separator />
-        <Label className="text-2xl">Question-Wise Responses</Label>
+    <div className="flex flex-grow flex-col gap-2 container my-8">
+      <div className="flex flex-col w-full space-y-0.5">
+        <h2 className="text-2xl font-bold tracking-tight">{form.title}</h2>
+        <Label className="text-muted-foreground">Question-Wise Responses</Label>
       </div>
+      <Separator className="mt-6" />
       {form.sections.map((section, index) => (
         <div key={section.id} className="flex flex-col gap-4">
           <Label className="text-2xl pt-4">
@@ -111,7 +115,8 @@ const QuestionWiseResponsePage = async ({ params }: Props) => {
                 <Separator />
                 <CardContent className="flex flex-col justify-end px-6 py-4 gap-4">
                   {question.type === "short" ||
-                  question.type === "paragraph" ? (
+                  question.type === "paragraph" ||
+                  question.type === "date" ? (
                     questions[question.id].uniqueResponse?.length ? (
                       questions[question.id].uniqueResponse?.map(
                         (val) => val && <Label key={val}>{val}</Label>

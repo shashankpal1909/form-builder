@@ -8,6 +8,7 @@ import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
+import DateComponent from "./date";
 import OptionsComponent from "./options";
 import ParagraphAnswerComponent from "./paragraph-answer";
 import ShortAnswerComponent from "./short-answer";
@@ -99,6 +100,7 @@ const QuestionComponent = ({
                   <SelectTrigger className="w-[180px]">
                     {question.type === "short" && "Short Answer"}
                     {question.type === "paragraph" && "Paragraph"}
+                    {question.type === "date" && "Date"}
                     {question.type === "radio" && "Multiple choice"}
                     {question.type === "check" && "Checkboxes"}
                     {question.type === "dropdown" && "Dropdown"}
@@ -106,6 +108,7 @@ const QuestionComponent = ({
                   <SelectContent>
                     <SelectItem value="short">Short Answer</SelectItem>
                     <SelectItem value="paragraph">Paragraph</SelectItem>
+                    <SelectItem value="date">Date</SelectItem>
                     <SelectItem value="radio">Multiple choice</SelectItem>
                     <SelectItem value="check">Checkboxes</SelectItem>
                     <SelectItem value="dropdown">Dropdown</SelectItem>
@@ -117,6 +120,7 @@ const QuestionComponent = ({
             <CardContent className="flex flex-col justify-end p-4 gap-4">
               {question.type === "short" && <ShortAnswerComponent />}
               {question.type === "paragraph" && <ParagraphAnswerComponent />}
+              {question.type === "date" && <DateComponent />}
               {["check", "radio", "dropdown"].includes(question.type) && (
                 <OptionsComponent
                   type={question.type}

@@ -2,7 +2,7 @@ import React from "react";
 
 import { auth } from "@/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { getFormWithResponseById, getResponseById } from "@/data/form";
@@ -35,10 +35,12 @@ const FormResponseByUserPage = async ({ params }: Props) => {
   }
 
   return (
-    <div className="container flex flex-col gap-2 py-8">
-      <div className="flex flex-col gap-4">
-        <Label className="text-3xl">{form.title}</Label>
-        <Separator />
+    <div className="flex flex-grow flex-col gap-2 container my-8">
+      <div className="flex flex-col w-full space-y-0.5">
+        <h2 className="text-2xl font-bold tracking-tight">{form.title}</h2>
+        <Label className="text-muted-foreground">Response #{response.id}</Label>
+      </div>
+      <Separator className="mt-4 mb-2" />
         <div className="flex items-center gap-2">
           <Avatar>
             <AvatarImage
@@ -56,7 +58,8 @@ const FormResponseByUserPage = async ({ params }: Props) => {
             {response.user?.name} | {response.createdAt.toLocaleString()}
           </Label>
         </div>
-      </div>
+      <Separator className="mt-2" />
+
       {form.sections.map((section, index) => (
         <div key={section.id} className="flex flex-col gap-4">
           <Label className="text-2xl pt-4">
@@ -67,6 +70,7 @@ const FormResponseByUserPage = async ({ params }: Props) => {
               <CardTitle className="flex gap-2 text-2xl justify-start items-center">
                 {section.title}
               </CardTitle>
+              <CardDescription>{section.description}</CardDescription>
             </CardHeader>
           </Card>
           <div className="flex flex-col gap-2">

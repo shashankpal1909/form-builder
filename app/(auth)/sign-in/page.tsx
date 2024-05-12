@@ -20,6 +20,7 @@ import {
     Form, FormControl, FormField, FormItem, FormLabel, FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { signInServerAction } from "@/lib/actions/sign-in";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
@@ -35,7 +36,7 @@ function SignInPage() {
       ? "Email already in use with different provider!"
       : "";
 
-  const [error, setError] = useState<string | undefined>("");
+  const [error, setError] = useState<string | undefined>(urlError);
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
@@ -153,7 +154,12 @@ function SignInPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="flex justify-between">
+                        Password
+                        <Link href="/forgot-password" className="underline">
+                          Forgot Password?
+                        </Link>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
